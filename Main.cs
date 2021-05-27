@@ -36,35 +36,28 @@ namespace PpUnlockAllSkins
 
                 if (geoLevelController != null)
                 {
-                    try
+                    var faction = geoLevelController.PhoenixFaction;
+                    var sharedData = GameUtl.GameComponent<SharedData>().SharedGameTags;
+
+                    var items = new List<TacticalItemDef>();
+
+                    items.AddRange(optionsManager.DefsRepo.GetAllDefs<TacticalItemDef>()
+                        .Where(x => x.Tags.Contains(geoLevelController.NeutralFactionDef.Tag)));
+                    items.AddRange(optionsManager.DefsRepo.GetAllDefs<RedeemableCodeDef>().SelectMany(x => x.GiftedItems));
+
+                    var manufacturableTag = sharedData.ManufacturableTag;
+
+                    foreach (var item in items)
                     {
-                        var faction = geoLevelController.PhoenixFaction;
-                        var sharedData = GameUtl.GameComponent<SharedData>().SharedGameTags;
-                        
-                        var items = new List<TacticalItemDef>();
-                        
-                        items.AddRange(optionsManager.DefsRepo.GetAllDefs<TacticalItemDef>()
-                            .Where(x => x.Tags.Contains(geoLevelController.NeutralFactionDef.Tag)));
-                        items.AddRange(optionsManager.DefsRepo.GetAllDefs<RedeemableCodeDef>().SelectMany(x => x.GiftedItems));
-                        
-                        var manufacturableTag = sharedData.ManufacturableTag;
-                        
-                        foreach (var item in items)
-                        {
-                            if (faction.Manufacture.ManufacturableItems.Any(x => x.RelatedItemDef.name == item.name))
-                                continue;
-                        
-                            if (!item.Tags.Contains(manufacturableTag))
-                                item.Tags.Add(manufacturableTag);
-                        
-                            var manufacturableItem = new ManufacturableItem(item);
-                        
-                            faction.Manufacture.ManufacturableItems.Add(manufacturableItem);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        GameUtl.GetMessageBox().ShowSimplePrompt($"2{e.Message}", MessageBoxIcon.Error, MessageBoxButtons.OK, null);
+                        if (faction.Manufacture.ManufacturableItems.Any(x => x.RelatedItemDef.name == item.name))
+                            continue;
+
+                        if (!item.Tags.Contains(manufacturableTag))
+                            item.Tags.Add(manufacturableTag);
+
+                        var manufacturableItem = new ManufacturableItem(item);
+
+                        faction.Manufacture.ManufacturableItems.Add(manufacturableItem);
                     }
                 }
             }
