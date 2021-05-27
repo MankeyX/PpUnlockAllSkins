@@ -24,7 +24,7 @@ namespace PpUnlockAllSkins
     }
 
     [HarmonyPatch(typeof(PhoenixStatisticsManager), "OnGeoscapeLevelStart")]
-    internal static class GeoLevelController_LevelCrt
+    internal static class PhoenixStatisticsManager_OnGeoscapeLevelStart
     {
         private static void Postfix()
         {
